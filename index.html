@@ -30,6 +30,8 @@
         } else {
           $order.textContent = order + 1;
         }
+        $input.value = '';
+        $input.focus();
       } else { //비어있지않다.
         if (word[word.length-1] === newWord[0]) { //입력한 단어가 올바른가?
           //올바르다.
@@ -41,8 +43,12 @@
           } else {
             $order.textContent = order + 1;
           }
+          $input.value = '';
+          $input.focus();
         } else { //올바르지 않다.
           alert('올바르지 않은 단어입니다');
+          $input.value = '';
+          $input.focus();
         }
       }
     }
