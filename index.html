@@ -4,45 +4,52 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>끝말잇기</title>
+  <title>쿵쿵따</title>
 </head>
 <body>
   <div><span id="order">1</span>번째 참가자</div>
-  <div>제시어: <span id="word"></span></div>
+  <div>제시어 : <span id="word">입력ㄱㄱ</span></div>
   <input type="text">
   <button>입력</button>
+  
   <script>
-    const number = Number(prompt('몇 명이 참가하나요?'));
-    const $button = document.querySelector('button');
-    const $input = document.querySelector('input');
-    const $word = document.querySelector('#word');
     const $order = document.querySelector('#order');
-    let word; //제시어
-    let newWord; //현재 단어
+    const $word = document.querySelector('#word');
+    const $input = document.querySelector('input');
+    const $button = document.querySelector('button');
+    const number = Number(prompt('몇 명이 참가하나요?'));
+    let word;
+    let newWord;
+    if (number <= 0 || isNaN(number)) {
+      alert('인원 입력 실패')
+    }
 
-    const onClickButton = () => {
-      if (!word || word[word.length-1] === newWord[0]) { //제시어가 비어 있는가? 또는 입력한 단어가 올바른가?
-        word = newWord; //입력한 단어가 제시어가 된다.
-        $word.textContent = word; //화면에 제시어 표시
+    const onInput = (event) => {
+      newWord = event.target.value;
+      console.log(newWord);
+    }
+    const onClick = () => {
+      if (!word || word[word.length-1] === newWord[0] && newWord.length === 3) {
+        word = newWord;
+        $word.textContent = word;
+        console.log(word);
         
-        const order = Number($order.textContent); //다음번호넘김
-        if(order+1 > number) {
-          $order.textContent = 1;
-        } else {
+        let order = Number($order.textContent);
+        if(order + 1 <= number) {
           $order.textContent = order + 1;
+        } else {
+          $order.textContent = 1;
         }
-      } else { //올바르지 않다.
-        alert('올바르지 않은 단어입니다');
+      } else {
+        alert('끝말잇기 틀렸음');
       }
-      $input.value = '';//입령창 비우고 커서 둠
+      $input.value = '';
       $input.focus();
     }
-    const onInput = (event) => {
-      newWord = event.target.value; //입력하는 단어를 현재 단어로
-    };
-    
-    $button.addEventListener('click', onClickButton);
+
     $input.addEventListener('input', onInput);
- </script>
+    $button.addEventListener('click', onClick);
+    
+  </script>
 </body>
 </html>
