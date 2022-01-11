@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>숫자야구게임</title>
+</head>
+<body>
+  <div>숫자 야구 게임: <span id="result">(결과)</span></div>
+  <input type="text" placeholder="숫자4글자 입력">
+  <button>클릭</button>
+  <p>남은기회: <span id="chance">10</span></p>
+  <script>
+    let answer = '';
+    let myAnswer = '';
+    let count = 10;
+    let strike = 0;
+    let ball = 0;
+    let out = 0;
+    const $result = document.querySelector('#result');
+    const $input = document.querySelector('input');
+    const $button = document.querySelector('button');
+    const $chance = document.querySelector('#chance');
+
+    while(true) {
+      answer = prompt('답안 숫자 4자리 입력');
+      if (answer.length === 4) break;
+    }
+    
+    $input.addEventListener('input', (event) => {
+      myAnswer = event.target.value;
+    })
+    
+    $button.addEventListener('click', () => {
+      if (myAnswer.length !== 4) {
+        alert('4숫자가 아닙니다');
+        return;
+      }
+      for (let i = 0; i < answer.length; i++) {
+        if (answer[i] === myAnswer[i]) {
+          strike++;
+        } else {
+          for (let j = 0; j < myAnswer.length; j++) {
+            if (answer[i] === myAnswer[j]) {
+              ball++;
+            }
+          }
+        }
+      }
+      out = answer.length - ball - strike;
+      console.log(`myanswer: ${myAnswer}\nstrike: ${strike}, ball: ${ball}, out: ${out}\n`);
+      strike = 0;
+      ball = 0;
+      out = 0;
+      count--;
+      $chance.textContent = count;
+      $input.value = '';
+      $input.focus();
+      if (count < 1) alert('Game Ends');
+    })
+    
+    
+  </script>
+</body>
+</html>

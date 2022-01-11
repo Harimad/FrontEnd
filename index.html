@@ -3,117 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>계산기</title>
-  <style>
-    * {box-sizing: border-box}
-    #result {width: 180px; height: 50px; margin: 5px; text-align: right;}
-    #operator {width: 50px; height: 50px; margin: 5px; text-align: center;}
-    button {width: 50px; height: 50px; margin: 5px;}
-  </style>
+  <title>숫자야구게임</title>
 </head>
 <body>
-  <input readonly id="operator">
-  <input readonly type="text" id="result">
-  <div class="row">
-    <button id="num-7">7</button>
-    <button id="num-8">8</button>
-    <button id="num-9">9</button>
-    <button id="plus">+</button>
-  </div>
-  <div class="row">
-    <button id="num-4">4</button>
-    <button id="num-5">5</button>
-    <button id="num-6">6</button>
-    <button id="minus">-</button>
-  </div>
-  <div id="row">
-    <button id="num-1">1</button>
-    <button id="num-2">2</button>
-    <button id="num-3">3</button>
-    <button id="divide">/</button>
-  </div>
-  <div id="row">
-    <button id="clear">C</button>
-    <button id="num-0">0</button>
-    <button id="calculate">=</button>
-    <button id="multiply">*</button>
-  </div>
+  <form id="form">
+    <!-- HTML5 검증 기능 활용 -->
+    <input type="text" id="input" required minlength="4" maxlength="4" pattern="^(?!.*(.).*\1)\d{4}$">
+    <button>확인</button>
+  </form>
+  <div id="logs"></div>
 
   <script>
-    let numOne = '';
-    let numTwo = '';
-    let operator = '';
-    const $operator = document.querySelector('#operator');
-    const $result = document.querySelector('#result');
-    
-    const onClickNumber = (event) => {
-      if (!operator) {
-        numOne += event.target.textContent;
-        $result.value += event.target.textContent;
+    const $input = document.querySelector('#input');
+    const $form = document.querySelector('#form');
+    const $logs = document.querySelector('#logs');
+
+    const numbers = [];
+    for (let n = 1; n <= 9; n++) {
+      numbers.push(n); //const numbers = Array(9).fill().map((v, i) => i + 1); 
+    }
+
+    //answer값 설정
+    const answer = [];
+    for (let n = 0; n <= 3; n++) { //네 번 반복
+      const index = Math.floor(Math.random() * numbers.length); //numbers길이에따라 숫자 랜덤 뽑기
+      answer.push(numbers[index]);
+      numbers.splice(index, 1);
+    }
+    console.log(answer);
+
+    //내 답 예측하기
+    const tries = [];
+
+    function checkInput(input) {
+      if (input.length !== 4) {
+        return alert('4자리 숫자 입력하세요!'); //alert는 undefined 반환
+      } 
+      if (new Set(input).size !== 4) { //Set은 중복을 허락X는 특수배열, length대신 size 씀
+        return alert('중복되지 않게 입력하세요!');
+      }
+      if (tries.includes(input)) { 
+        return alert('이미 시도한 값임!')
+      }
+      return true;
+    }
+
+    $form.addEventListener('submit', (event) => {
+      event.preventDefault(); //폼 태그 기본동작 취소코드, submit발생때 새로고침 방지
+      const value = $input.value;
+      $input.value = '';
+      const valid = checkInput(value);
+      //시도 횟수 10회 넘겼는지 검사
+      if (!valid) return;
+      if (answer.join('') === value) {
+        $logs.textContent = '홈런';
         return;
       }
-      if (!numTwo) {
-        $result.value = '';
+      if (tries.length >= 9) {
+        const message = document.createTextNode(`패배! 정답은 ${answer.join('')}`);
+        $logs.appendChild(message);
+        return;
       }
-      numTwo += event.target.textContent;
-      $result.value += event.target.textContent;
-    }
-
-    document.querySelector('#num-0').addEventListener('click', onClickNumber)
-    document.querySelector('#num-1').addEventListener('click', onClickNumber)
-    document.querySelector('#num-2').addEventListener('click', onClickNumber)
-    document.querySelector('#num-3').addEventListener('click', onClickNumber)
-    document.querySelector('#num-4').addEventListener('click', onClickNumber)
-    document.querySelector('#num-5').addEventListener('click', onClickNumber)
-    document.querySelector('#num-6').addEventListener('click', onClickNumber)
-    document.querySelector('#num-7').addEventListener('click', onClickNumber)
-    document.querySelector('#num-8').addEventListener('click', onClickNumber)
-    document.querySelector('#num-9').addEventListener('click', onClickNumber)
-
-    const onClickOperator = (op) => () => {
-      if (numOne) {
-        operator = op;
-        $operator.value = op;
-      } else {
-        alert('숫자를 먼저 입력하세요.');
-      }
-    }
-    document.querySelector('#plus').addEventListener('click', onClickOperator('+'))
-    document.querySelector('#minus').addEventListener('click', onClickOperator('-'))
-    document.querySelector('#divide').addEventListener('click', onClickOperator('/'))
-    document.querySelector('#multiply').addEventListener('click', onClickOperator('*'))
-    //계산
-    document.querySelector('#calculate').addEventListener('click', ()=>{
-      if (numTwo) {
-        switch (operator) {
-          case '+':
-          $result.value = parseInt(numOne) + parseInt(numTwo);
-          break;
-          case '-':
-          $result.value = numOne - numTwo;
-          break;
-          case '*':
-          $result.value = numOne * numTwo;
-          break;
-          case '/':
-          $result.value = numOne / numTwo;
-          break;
+      //몇 스트라이크 몇 볼인지 검사
+      let strike = 0;
+      let ball = 0;
+      for (let i = 0; i < answer.length; i++) {
+        const index = value.indexOf(answer[i])
+        if (index > -1) { //일치하는 숫자 발견
+          if (index === i) { //자릿수도 같을때
+            strike += 1;
+          } else { //숫자만 같을때
+            ball += 1;
+          }
         }
-        $operator.value = '';
-        numOne = result.value;
-        operator = '';
-        numTwo = '';
       }
+      $logs.append(`${value}: ${strike} 스트라이크 ${ball} 볼`, document.createElement('br'));
+      tries.push(value);
     })
-    //모든 변수와 함수 초기화
-    document.querySelector('#clear').addEventListener('click', ()=>{
-       numOne = '';
-       operator = '';
-       numTwo = '';
-       $operator.value = '';
-       $result.value = '';
-    })
-
   </script>
 </body>
 </html>
