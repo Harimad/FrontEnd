@@ -35,38 +35,23 @@
     </tr>
   </table> -->
 <script>
-  let turn = 'O';
-  const data = [];
   const {body} = document;
-
-  for (let i = 0; i < 3; i++) {
-    data.push([]);
-  }
-  
   const $table = document.createElement('table');
+  const $result = document.createElement('div'); //결과창
+  const rows = [];
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 1; i <= 3; i++) {
     const $tr = document.createElement('tr');
-    for (let i = 0; i< 3; i++) {
+    const cells = [];
+    for (let j = 1; j <= 3; j++) {
       const $td = document.createElement('td');
-      $td.addEventListener('click', (event) => {
-        //칸에 글자가 있나?
-        if (event.target.textContent) return; //있으면 멈춤
-
-        event.target.textContent = turn;
-        //승부 확인
-        if (turn === 'O') {
-          turn = 'X';
-        } else if (turn === 'X') {
-          turn = 'O';
-        }
-      });
-      $tr.append($td);
+      cells.push($td);
+      $tr.appendChild($td);
     }
-    $table.append($tr);
+    rows.push(cells);
+    $table.appendChild($tr);
   }
-  document.body.append($table);
-
+  console.log(rows);
 </script>
 </body>
 </html>
