@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>10장_틱택토</title>
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+    td {
+      border: 1px solid black;
+      width: 40px;
+      height: 40px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <!-- <table>
+    <tr>
+      <dt></dt>
+      <dt></dt>
+      <dt></dt>
+    </tr>
+    <tr>
+      <dt></dt>
+      <dt></dt>
+      <dt></dt>
+    </tr>
+    <tr>
+      <dt></dt>
+      <dt></dt>
+      <dt></dt>
+    </tr>
+  </table> -->
+<script>
+  const {body} = document;
+  const $table = document.createElement('table');
+  const $result = document.createElement('div'); //결과창
+  const rows = [];
+  let turn = 'O';
+
+  const checkWinner = (target) => {
+    // let rowIndex;
+    // let cellIndex;
+    // rows.forEach((row, ri) => {
+    //   row.forEach((cell, ci) => {
+    //     if (cell === target) {
+    //       rowIndex = ri;
+    //       cellIndex = ci;
+    //     }
+    //   });
+    // }); //아래 축약
+    const rowIndex = target.parentNode.rowIndex;
+    const cellIndex = target.cellIndex;
+
+    // console.log(target.parentNode.children);
+    // console.log(target.parentNode.children.indexOf(target)); //children은 배열이 아니라서 indexOf메서드 사용할 수 없다. Tag.children은 객체이다.그래도 children[0]이나 children.length처럼 사용할 수 있어서 배열로 착각하기 쉬운데, 이런 객체를 유사 배열 객체(array-like object) 라고 한다.
+    console.log(Array.from(target.parentNode.children));
+    console.log(Array.from(target.parentNode.children).indexOf(target));
+
+    // 세 칸 다 채워졌나?
+    let hasWinner = false;
+    // 가로줄 검사
+    if (
+      rows[rowIndex][0].textContent === turn &&
+      rows[rowIndex][1].textContent === turn &&
+      rows[rowIndex][2].textContent === turn
+    ) {
+      hasWinner = true;
+    }
+    // 세로줄 검사
+    if (
+      rows[0][cellIndex].textContent === turn &&
+      rows[1][cellIndex].textContent === turn &&
+      rows[2][cellIndex].textContent === turn
+    ) {
+      hasWinner = true;
+    }
+    // 대각선 검사
+    if (
+      rows[0][0].textContent === turn &&
+      rows[1][1].textContent === turn &&
+      rows[2][2].textContent === turn
+    ) {
+      hasWinner = true;
+    }
+    if (
+      rows[0][2].textContent === turn &&
+      rows[1][1].textContent === turn &&
+      rows[2][0].textContent === turn
+    ) {
+      hasWinner = true;
+    }
+    return hasWinner;
+  };
+
+  const checkWinnerAndDraw = (target) => {
+    const hasWinner = checkWinner(target);
+    //승자가 있으면
+    if (hasWinner) {
+      $result.textContent = `${turn}님의 승리!`;
+      $table.removeEventListener('click', callback);
+      return;
+    }
+    //승자가 없으면
+    const draw = rows.flat().every((cell) => cell.textContent);
+    if (draw) {
+      $result.textContent = '무승부';
+      return;
+    }
+    turn = turn === 'X' ? 'O' : 'X';
+  };
+
+  let clickable = true;
+
+  const callback = (event) => {
+    if (!clickable) {
+      return;
+    }
+
+    if (event.target.textContent !== '') { // 칸이 이미 채워져 있는가?
+      console.log('빈칸이 아님');
+      return;
+    } else { // 빈칸이면
+      console.log('빈칸임');
+      event.target.textContent = turn;
+      
+      checkWinnerAndDraw(event.target);
+
+      //컴퓨터 차례를 넣음
+      if (turn === 'X') {
+        const emptyCells = rows.flat().filter((v) => !v.textContent);
+        const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        
+        clickable = false;
+        setTimeout(() => {
+          randomCell.textContent = 'X';
+          checkWinnerAndDraw(randomCell);
+          clickable = true;
+        }, 1000);
+      }
+    }
+  };
+
+  for (let i = 1; i <= 3; i++) {
+    const $tr = document.createElement('tr');
+    const cells = [];
+    for (let j = 1; j <= 3; j++) {
+      const $td = document.createElement('td');
+      cells.push($td);
+      $tr.appendChild($td);
+    }
+    rows.push(cells);
+    $table.appendChild($tr);
+    $table.addEventListener('click', callback);
+  }
+  // console.log(rows);
+  body.appendChild($table);
+  body.appendChild($result);
+</script>
+</body>
+</html>
