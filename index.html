@@ -96,6 +96,23 @@
     return hasWinner;
   };
 
+  const checkWinnerAndDraw = (target) => {
+    const hasWinner = checkWinner(target);
+    //승자가 있으면
+    if (hasWinner) {
+      $result.textContent = `${turn}님의 승리!`;
+      $table.removeEventListener('click', callback);
+      return;
+    }
+    //승자가 없으면
+    const draw = rows.flat().every((cell) => cell.textContent);
+    if (draw) {
+      $result.textContent = '무승부';
+      return;
+    }
+    turn = turn === 'X' ? 'O' : 'X';
+  };
+
   const callback = (event) => {
     if (event.target.textContent !== '') { // 칸이 이미 채워져 있는가?
       console.log('빈칸이 아님');
@@ -103,48 +120,16 @@
     } else { // 빈칸이면
       console.log('빈칸임');
       event.target.textContent = turn;
-      const hasWinner = checkWinner(event.target);
-      // 승자가 있으면
-      if (hasWinner) {
-        $result.textContent = `${turn}님의 승리`;
-        $table.removeEventListener('click', callback);
-        return;
-      }
-      // 승자가 없으면
-      // let draw = true;
-      // rows.forEach((row) => {
-      //   row.forEach((cell) => {
-      //     if (!cell.textContent) {
-      //       draw = false;
-      //     }
-      //   });
-      // }); //아래 축약
-      const draw = rows.flat().every((cell) => cell.textContent);
-
-      if (draw) {
-        $result.textContent = `무승부`;
-        return;
-      }
-      turn = turn === 'X' ? 'O' : 'X'; //turn 을 O,X번갈아 바꾸기
+      
+      checkWinnerAndDraw(event.target);
 
       //컴퓨터 차례를 넣음
       if (turn === 'X') {
         const emptyCells = rows.flat().filter((v) => !v.textContent);
         const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
         randomCell.textContent = 'X';
-        const hasWinner = checkWinner(randomCell);
-        //승자가 있으면
-        if (hasWinner) {
-          $result.textContent = `${turn}님의 승리!`;
-          return;
-        }
-        //승자가 없으면
-        const draw = rows.flat().every((cell) => cell.textContent);
-        if(draw) {
-          $result.textContent = '무승부';
-          return;
-        }
-        turn = turn === 'X' ? 'O' : 'X';
+        
+        checkWinnerAndDraw(randomCell);
       }
     }
   };
