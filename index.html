@@ -51,6 +51,7 @@
     let shuffled = [];
     let clicked = [];
     let completed = [];
+    let clickable = false;
 
     function shuffle() {
       for (let i = 0; colorCopy.length > 0; i++) {
@@ -76,6 +77,10 @@
     }
 
     function onClickCard() {
+      if (!clickable || completed.includes(this) || clicked[0] === this) {
+        return;
+      }
+
       this.classList.toggle('flipped'); //this또는 event.target이때는 event 넣어줘야함
       clicked.push(this);
       if (clicked.length !== 2) { //2장이 아니면 함수 종료
@@ -99,10 +104,12 @@
       }
       
       //두 카드가 다르면
+      clickable = false;
       setTimeout(() => {
         clicked[0].classList.remove('flipped');
         clicked[1].classList.remove('flipped');
         clicked = [];
+        clickable = true;
       }, 500);
     }
 
@@ -124,6 +131,7 @@
         document.querySelectorAll('.card').forEach((card) => {
           card.classList.remove('flipped');
         });
+        clickable = true;
       }, 5000);
     }
     startGame();
@@ -133,6 +141,7 @@
       colorCopy = colors.concat(colors);
       shuffled = [];
       completed = [];
+      clickable = false;
       startGame();
     }
 
